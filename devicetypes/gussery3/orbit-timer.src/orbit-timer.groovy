@@ -52,14 +52,11 @@ metadata {
         valueTile("battery", "device.battery", decoration: "flat") {
 			state "battery", label:'${currentValue}% battery', unit:""
 		}
-        standardTile("configure", "device.configure", decoration: "flat") {
-			state "configure", label:'', action:"configuration.configure", icon:"st.secondary.configure"
-		}
         standardTile("refresh", "device.refresh", decoration: "flat") {
 			state "refresh", label:'', action:"refresh.refresh", icon:"st.secondary.refresh"
 		}
 		main "switch"
-		details(["switch","battery","refresh","configure"])
+		details(["switch","battery","refresh"])
 	}
 }
 
@@ -123,6 +120,8 @@ def close() {
 
 def refresh() {
 	log.debug "sending refresh command"
+    "zdo bind 0x${device.deviceNetworkId} 1 1 6 {${device.zigbeeId}} {}"
+    zigbee.configureReporting(0x0001, 0x0020, 0x20, 30, 21600, 0x01)
 	"st rattr 0x${device.deviceNetworkId} 1 6 0"
     zigbee.readAttribute(0x0001, 0x0020)
     
